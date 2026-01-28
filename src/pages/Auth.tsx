@@ -387,6 +387,16 @@ const Auth = () => {
             Continue with Google
           </Button>
 
+          {mode === "login" && method === "email" && (
+            <button
+              type="button"
+              onClick={() => navigate("/forgot-password")}
+              className="block w-full text-center mt-4 text-sm text-gold hover:underline"
+            >
+              Forgot Password?
+            </button>
+          )}
+
           <p className="text-center mt-6 text-muted-foreground">
             {mode === "login" ? "Don't have an account? " : "Already have an account? "}
             <button
