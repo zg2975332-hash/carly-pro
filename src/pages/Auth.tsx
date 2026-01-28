@@ -116,22 +116,41 @@ const Auth = () => {
 
     setLoading(true);
     try {
+      // Convert phone to email format for auth (phone auth requires SMS provider setup)
+      // Using phone as unique identifier with email suffix
+      const phoneEmail = `${phone.replace(/[^0-9]/g, '')}@phone.malik.app`;
+      
       if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
-          phone,
+          email: phoneEmail,
           password,
           options: {
-            data: { full_name: fullName },
+            emailRedirectTo: `${window.location.origin}/dashboard`,
+            data: { 
+              full_name: fullName,
+              phone: phone,
+              auth_method: 'phone'
+            },
           },
         });
-        if (error) throw error;
+        if (error) {
+          if (error.message.includes("User already registered")) {
+            throw new Error("This phone number is already registered. Please login.");
+          }
+          throw error;
+        }
         toast.success("Account created successfully!");
       } else {
         const { error } = await supabase.auth.signInWithPassword({
-          phone,
+          email: phoneEmail,
           password,
         });
-        if (error) throw error;
+        if (error) {
+          if (error.message.includes("Invalid login credentials")) {
+            throw new Error("Invalid phone number or password");
+          }
+          throw error;
+        }
         toast.success("Welcome back!");
       }
     } catch (error: any) {
