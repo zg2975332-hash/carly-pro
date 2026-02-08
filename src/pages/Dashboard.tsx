@@ -64,7 +64,7 @@ const Dashboard = () => {
     try {
       const { data, error } = await supabase
         .from("cars")
-        .select(`id, model, color, images, sale_status, created_at, buyers (buying_price), sellers (selling_price)`)
+        .select(`id, model, color, images, sale_status, created_at, sellers (selling_price), buyers (buying_price)`)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -99,9 +99,9 @@ const Dashboard = () => {
   const soldCars = cars.filter((c) => c.sale_status === "sold").length;
 
   const calculateProfit = (car: CarRecord) => {
-    const buyingPrice = car.buyers?.[0]?.buying_price || 0;
-    const sellingPrice = car.sellers?.[0]?.selling_price || 0;
-    return sellingPrice - buyingPrice;
+    const sellingPrice = car.sellers?.[0]?.buying_price || 0;
+    const buyingPrice = car.buyers?.[0]?.selling_price || 0;
+    return buyingPrice - sellingPrice;
   };
 
   const totalProfit = cars
